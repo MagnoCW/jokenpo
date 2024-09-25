@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'JoKenPo'),
@@ -37,7 +37,18 @@ class _MyHomePageState extends State<MyHomePage> {
   String papel = 'lib/images/papel.png';
   String tesoura = 'lib/images/tesoura.png';
 
-  void _escolhaDoApp(jokenpo) {
+  String? jokenpo;
+  bool _bool = true;
+
+  void _jogar(bool ganhar) {
+    if (ganhar) {
+      _appGanha();
+    } else {
+      _appPerde();
+    }
+  }
+
+  void _appGanha() {
     setState(() {
       if (jokenpo == pedra){
         padrao = papel;
@@ -49,12 +60,31 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _appPerde () {
+    setState(() {
+      if (jokenpo == pedra){
+        padrao = tesoura;
+      } else if (jokenpo == papel) {
+        padrao = pedra;
+      } else {
+        padrao = papel;
+      }
+    });
+  }
+
+  void _reiniciarAppGanha(bool ganha) {
+    setState(() {
+      padrao = 'lib/images/padrao.png';
+      _bool = ganha;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),),
       ),
       body: Center(
         child: Column(
@@ -86,7 +116,8 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(onPressed: () {
-                  _escolhaDoApp(pedra);
+                  jokenpo = pedra;
+                  _jogar(_bool);
                 }, 
                   child: Image.asset(
                     pedra,
@@ -95,7 +126,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),         
                 TextButton(onPressed: () {
-                  _escolhaDoApp(papel);
+                  jokenpo = papel;
+                  _jogar(_bool);
                 }, 
                   child: Image.asset(
                     papel,
@@ -104,7 +136,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 TextButton(onPressed: () {
-                  _escolhaDoApp(tesoura);
+                  jokenpo = tesoura;
+                  _jogar(_bool);
                 }, 
                   child: Image.asset(
                     tesoura,
@@ -113,6 +146,36 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 100,),
+            Listener(
+              onPointerDown: (PointerDownEvent event) {
+                if (event.buttons == 1) {
+                  _reiniciarAppGanha(true);
+                } else if (event.buttons == 2) {
+                  _reiniciarAppGanha(false);
+                }
+              },
+              child: TextButton(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Colors.orange), // Define a cor de fundo do botão
+                  padding: WidgetStateProperty.all(EdgeInsets.symmetric(horizontal: 24, vertical: 12)), // Adiciona um padding
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0), // Define as bordas arredondadas
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                }, 
+                child: Text(
+                  'Reiniciar',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
             ),
           ],
         )
